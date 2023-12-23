@@ -15,7 +15,7 @@ use sea_orm::DatabaseConnection;
 
 use crate::{
     controllers,
-    models::_entities::{notes, users},
+    models::_entities::{users},
     tasks,
     workers::downloader::DownloadWorker,
 };
@@ -44,7 +44,7 @@ impl Hooks for App {
     fn routes() -> AppRoutes {
         AppRoutes::with_default_routes()
             .prefix("/api")
-            .add_route(controllers::notes::routes())
+            //.add_route(controllers::notes::routes())
             .add_route(controllers::auth::routes())
             .add_route(controllers::user::routes())
     }
@@ -59,13 +59,13 @@ impl Hooks for App {
 
     async fn truncate(db: &DatabaseConnection) -> Result<()> {
         truncate_table(db, users::Entity).await?;
-        truncate_table(db, notes::Entity).await?;
+        //truncate_table(db, notes::Entity).await?;
         Ok(())
     }
 
     async fn seed(db: &DatabaseConnection, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(db, &base.join("users.yaml").display().to_string()).await?;
-        db::seed::<notes::ActiveModel>(db, &base.join("notes.yaml").display().to_string()).await?;
+        //db::seed::<notes::ActiveModel>(db, &base.join("notes.yaml").display().to_string()).await?;
         Ok(())
     }
 }
