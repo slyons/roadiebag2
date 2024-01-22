@@ -48,16 +48,19 @@ async fn register(
     let user = user
         .into_active_model()
         .set_email_verification_sent(&ctx.db)
+        .await?
+        .into_active_model()
+        .verified(&ctx.db)
         .await?;
 
-    AuthMailer::send_welcome(&ctx, &user).await?;
+    //AuthMailer::send_welcome(&ctx, &user).await?;
 
     format::json(())
 }
 
 /// Verify register user. if the user not verified his email, he can't login to
 /// the system.
-async fn verify(
+/*async fn verify(
     State(ctx): State<AppContext>,
     Json(params): Json<VerifyParams>,
 ) -> Result<Json<()>> {
@@ -72,13 +75,13 @@ async fn verify(
     }
 
     format::json(())
-}
+}*/
 
 /// In case the user forgot his password  this endpoints generate a forgot token
 /// and send email to the user. In case the email not found in our DB, we are
 /// returning a valid request for for security reasons (not exposing users DB
 /// list).
-async fn forgot(
+/*async fn forgot(
     State(ctx): State<AppContext>,
     Json(params): Json<ForgotParams>,
 ) -> Result<Json<()>> {
@@ -96,10 +99,10 @@ async fn forgot(
     AuthMailer::forgot_password(&ctx, &user).await?;
 
     format::json(())
-}
+}*/
 
 /// reset user password by the given parameters
-async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -> Result<Json<()>> {
+/*async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -> Result<Json<()>> {
     let Ok(user) = users::Model::find_by_reset_token(&ctx.db, &params.token).await else {
         // we don't want to expose our users email. if the email is invalid we still
         // returning success to the caller
@@ -112,7 +115,7 @@ async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -
         .await?;
 
     format::json(())
-}
+}*/
 
 /// Creates a user login and returns a token
 async fn login(
@@ -140,8 +143,8 @@ pub fn routes() -> Routes {
     Routes::new()
         .prefix("auth")
         .add("/register", post(register))
-        .add("/verify", post(verify))
+        //.add("/verify", post(verify))
         .add("/login", post(login))
-        .add("/forgot", post(forgot))
-        .add("/reset", post(reset))
+        //.add("/forgot", post(forgot))
+        //.add("/reset", post(reset))
 }

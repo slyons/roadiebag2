@@ -38,12 +38,6 @@ async fn can_register() {
         }, {
             assert_debug_snapshot!(saved_user);
         });
-
-        with_settings!({
-            filters => testing::cleanup_email()
-        }, {
-            assert_debug_snapshot!(ctx.mailer.unwrap().deliveries());
-        });
     })
     .await;
 }
@@ -134,58 +128,6 @@ async fn can_login_without_verify() {
             filters => testing::cleanup_user_model()
         }, {
             assert_debug_snapshot!((response.status_code(), response.text()));
-        });
-    })
-    .await;
-}
-
-#[tokio::test]
-#[serial]
-async fn can_reset_password() {
-    configure_insta!();
-
-    testing::request::<App, _, _>(|request, ctx| async move {
-        let login_data = prepare_data::init_user_login(&request, &ctx).await;
-
-        let forgot_payload = serde_json::json!({
-            "email": login_data.user.email,
-        });
-        _ = request.post("/api/auth/forgot").json(&forgot_payload).await;
-
-        let user = users::Model::find_by_email(&ctx.db, &login_data.user.email)
-            .await
-            .unwrap();
-        assert!(user.reset_token.is_some());
-
-        let new_password = "new-password";
-        let reset_payload = serde_json::json!({
-            "token": user.reset_token,
-            "password": new_password,
-        });
-
-        let reset_response = request.post("/api/auth/reset").json(&reset_payload).await;
-
-        let user = users::Model::find_by_email(&ctx.db, &user.email)
-            .await
-            .unwrap();
-        assert!(user.reset_sent_at.is_some());
-
-        assert_debug_snapshot!((reset_response.status_code(), reset_response.text()));
-
-        let response = request
-            .post("/api/auth/login")
-            .json(&serde_json::json!({
-                "email": user.email,
-                "password": new_password
-            }))
-            .await;
-
-        assert_eq!(response.status_code(), 200);
-
-        with_settings!({
-            filters => testing::cleanup_email()
-        }, {
-            assert_debug_snapshot!(ctx.mailer.unwrap().deliveries());
         });
     })
     .await;
