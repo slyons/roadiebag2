@@ -1,0 +1,22 @@
+---
+source: tests/requests/taken.rs
+expression: "((current_response.status_code(), current_response.text()),\n    (get_random.status_code(), get_random.text()),\n    (decr.status_code(), decr.text()),\n    (done_request.status_code(), done_request.text()))"
+---
+(
+    (
+        200,
+        "null",
+    ),
+    (
+        200,
+        "{\"created_at\":\"DATE\",\"updated_at\":\"DATE\",\"id\":1,\"item_id\":1,\"rounds_left\":1,\"done\":false,\"rounds_total\":1}",
+    ),
+    (
+        200,
+        "{\"created_at\":\"DATE\",\"updated_at\":\"DATE\",\"id\":1,\"item_id\":1,\"rounds_left\":0,\"done\":true,\"rounds_total\":1}",
+    ),
+    (
+        200,
+        "",
+    ),
+)

@@ -10,7 +10,7 @@ edition = "2021"
 
 [dependencies]
 
-loco-rs = { version = "0.1.8" }
+loco-rs = { version = "0.2.2" }
 migration = { path = "migration" }
 
 serde = { version = "1", features = ["derive"] }
@@ -33,6 +33,8 @@ include_dir = "0.7"
 uuid = { version = "1.6.0", features = ["v4"] }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter", "json"] }
 interface = { version = "0.1.0", path = "interface" }
+rand = "0.8.5"
+
 
 [[bin]]
 name = "roadiebag2-cli"
@@ -42,5 +44,7 @@ required-features = []
 [dev-dependencies]
 serial_test = "2.0.0"
 rstest = "0.18.2"
-loco-rs = { version = "0.1.8", features = ["testing"] }
+loco-rs = { version = "0.2.2", features = ["testing"] }
 insta = { version = "1.34.0", features = ["redactions", "yaml", "filters"] }
+tracing-test = "0.2.4"
+test-log = { version = "0.2.14", features = ["tracing-subscriber", "trace"] }

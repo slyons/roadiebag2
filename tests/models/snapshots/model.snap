@@ -1,0 +1,17 @@
+---
+source: tests/models/taken_items.rs
+expression: "(current_taken_none, current_random, current_taken_done)"
+---
+(
+    None,
+    TakenItem {
+        created_at: DATE,
+        updated_at: DATE,
+        id: 1,
+        item_id: 1,
+        rounds_left: ROUNDS_LEFT,
+        done: false,
+        rounds_total: ROUNDS_TOTAL,
+    },
+    None,
+)

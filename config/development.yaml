@@ -85,7 +85,7 @@ database:
   # Database connection URI
   uri: {{ get_env(name="DATABASE_URL", default="postgres://postgres:postgres123@localhost:5432/roadiebag2_dev") }}
   # When enabled, the sql query will be logged.
-  enable_logging: false
+  enable_logging: true
   # Set the timeout duration when acquiring a connection.
   connect_timeout: 500
   # Set the idle duration before closing a connection.

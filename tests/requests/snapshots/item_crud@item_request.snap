@@ -1,0 +1,22 @@
+---
+source: tests/requests/items.rs
+expression: "((create_response.status_code(), create_response.text()),\n    (read_response.status_code(), read_response.text()),\n    (update_response.status_code(), update_response.text()),\n    (delete_response.status_code(), delete_response.status_code()))"
+---
+(
+    (
+        200,
+        "{\"created_at\":\"DATE\",\"updated_at\":\"DATE\",\"id\":1,\"name\":\"Test item\",\"description\":null,\"quantity\":2,\"size\":\"Small\",\"infinite\":false}",
+    ),
+    (
+        200,
+        "{\"created_at\":\"DATE\",\"updated_at\":\"DATE\",\"id\":1,\"name\":\"Test item\",\"description\":null,\"quantity\":2,\"size\":\"Small\",\"infinite\":false}",
+    ),
+    (
+        200,
+        "{\"created_at\":\"DATE\",\"updated_at\":\"DATE\",\"id\":1,\"name\":\"Test item\",\"description\":null,\"quantity\":4,\"size\":\"Small\",\"infinite\":false}",
+    ),
+    (
+        200,
+        200,
+    ),
+)

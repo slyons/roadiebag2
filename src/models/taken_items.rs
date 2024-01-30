@@ -104,20 +104,21 @@ impl Model {
                             )
                         ).finally(1)
                     ).gte(1)
-                )
-                .column(items::Column::Id);
-
+                );
+                //.column(items::Column::Id);
             let item_count = item_uses.clone().count(&txn).await?;
             tracing::info!("Item count is {}", item_count);
             let item_offset = rand::random::<u64>().clamp(0, item_count - 1);
             tracing::info!("Selecting offset {}", item_offset);
-            let item_id:i32 = item_uses.offset(item_offset).into_tuple().one(&txn)
+            //let item_id = item_uses.offset(item_offset).into_tuple().one(&txn)
+            //    .await?
+            //    .expect(&format!("Item with offset {} returned None", item_offset));
+            let item = item_uses.offset(item_offset).one(&txn)
                 .await?
                 .expect(&format!("Item with offset {} returned None", item_offset));
             let total_rounds = rand::random::<i16>().clamp(1, 6);
-
             let model = ActiveModel {
-                item_id: ActiveValue::Set(item_id),
+                item_id: ActiveValue::Set(item.id),
                 rounds_left: ActiveValue::Set(total_rounds),
                 rounds_total: ActiveValue::Set(total_rounds),
                 done: ActiveValue::Set(false),
