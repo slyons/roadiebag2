@@ -1,0 +1,28 @@
+---
+source: tests/models/items.rs
+expression: "(model, model2)"
+---
+(
+    Model {
+        created_at: DATE,
+        updated_at: DATE,
+        id: 1,
+        name: "Test item",
+        description: None,
+        quantity: 2,
+        size: 0,
+        infinite: false,
+    },
+    Ok(
+        Model {
+            created_at: DATE,
+            updated_at: DATE,
+            id: 1,
+            name: "Test item",
+            description: None,
+            quantity: 4,
+            size: 0,
+            infinite: false,
+        },
+    ),
+)

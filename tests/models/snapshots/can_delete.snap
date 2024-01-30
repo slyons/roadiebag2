@@ -1,0 +1,38 @@
+---
+source: tests/models/items.rs
+expression: "(starting_list, after_create_list, after_delete_list)"
+---
+(
+    ItemPage {
+        items: [],
+        page_num: 0,
+        total_pages: 0,
+        page_size: 50,
+        total_results: 0,
+    },
+    ItemPage {
+        items: [
+            Item {
+                created_at: DATE,
+                updated_at: DATE,
+                id: 1,
+                name: "Test item",
+                description: None,
+                quantity: 2,
+                size: Small,
+                infinite: false,
+            },
+        ],
+        page_num: 0,
+        total_pages: 1,
+        page_size: 50,
+        total_results: 1,
+    },
+    ItemPage {
+        items: [],
+        page_num: 0,
+        total_pages: 0,
+        page_size: 50,
+        total_results: 0,
+    },
+)

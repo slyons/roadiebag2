@@ -72,6 +72,7 @@ async fn handle_create_with_password_with_duplicate() {
         },
     )
     .await;
+
     assert_debug_snapshot!(new_user);
 }
 

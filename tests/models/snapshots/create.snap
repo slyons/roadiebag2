@@ -1,0 +1,16 @@
+---
+source: tests/models/items.rs
+expression: model
+---
+Ok(
+    Model {
+        created_at: DATE,
+        updated_at: DATE,
+        id: 1,
+        name: "Test item",
+        description: None,
+        quantity: 2,
+        size: 0,
+        infinite: false,
+    },
+)
