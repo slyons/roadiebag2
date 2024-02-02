@@ -3,8 +3,6 @@ use std::borrow::BorrowMut;
 use loco_rs::schema::*;
 use sea_orm_migration::prelude::*;
 
-use crate::m20240123_154524_taken_items::TakenItems as TakenItemsOld;
-
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 

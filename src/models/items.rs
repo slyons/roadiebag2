@@ -5,11 +5,10 @@ use loco_rs::{
     validator::Validate,
 };
 use sea_orm::{
-    entity::prelude::*,
-    sea_query::{extension::postgres::PgExpr, *},
-    ActiveValue, DatabaseConnection, DbErr, Paginator, QueryOrder, QuerySelect, TransactionTrait,
+    entity::prelude::*, sea_query::extension::postgres::PgExpr, ActiveValue, DatabaseConnection,
+    DbErr, QueryOrder, TransactionTrait,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 pub use super::_entities::items::{self, ActiveModel, Entity, Model};
 
@@ -33,17 +32,17 @@ impl From<&ActiveModel> for ModelValidator {
     }
 }
 
-impl Into<interface::Item> for Model {
-    fn into(self) -> interface::Item {
+impl From<Model> for interface::Item {
+    fn from(val: Model) -> Self {
         interface::Item {
-            created_at: self.created_at,
-            updated_at: self.updated_at,
-            name: self.name,
-            description: self.description,
-            id: self.id,
-            size: interface::ItemSize::from_repr(self.size).unwrap(),
-            infinite: self.infinite,
-            quantity: self.quantity,
+            created_at: val.created_at,
+            updated_at: val.updated_at,
+            name: val.name,
+            description: val.description,
+            id: val.id,
+            size: interface::ItemSize::from_repr(val.size).unwrap(),
+            infinite: val.infinite,
+            quantity: val.quantity,
         }
     }
 }
@@ -140,7 +139,7 @@ impl Model {
             return Err(ModelError::EntityNotFound {});
         }
 
-        let item = items::ActiveModel {
+        items::ActiveModel {
             id: ActiveValue::Set(id),
             ..Default::default()
         }
@@ -159,15 +158,15 @@ impl Model {
 
         let mut query = items::Entity::find().order_by_desc(items::Column::Id);
         if let Some(mut name) = filter.name {
-            if !name.contains("%") {
-                name = name + "%";
+            if !name.contains('%') {
+                name += "%";
             }
             query = query.filter(Expr::col(items::Column::Name).ilike(name));
         }
 
         if let Some(mut description) = filter.description {
-            if !description.contains("%") {
-                description = description + "%";
+            if !description.contains('%') {
+                description += "%";
             }
             query = query.filter(Expr::col(items::Column::Description).ilike(description));
         }
@@ -197,9 +196,9 @@ impl Model {
             .collect();
 
         Ok(interface::ItemPage {
-            items: items,
+            items,
             page_num: filter.page_num,
-            page_size: page_size,
+            page_size,
             total_pages: items_and_pages.number_of_pages,
             total_results: items_and_pages.number_of_items,
         })

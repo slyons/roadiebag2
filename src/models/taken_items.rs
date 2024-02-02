@@ -1,11 +1,7 @@
 use chrono::Utc;
 use interface::TakenItem;
-use loco_rs::model::{ModelError, ModelResult};
-use sea_orm::{
-    entity::prelude::*,
-    sea_query::{Alias, Query},
-    ActiveValue, JoinType, QuerySelect, TransactionTrait,
-};
+use loco_rs::model::ModelResult;
+use sea_orm::{entity::prelude::*, ActiveValue, QuerySelect, TransactionTrait};
 
 use super::_entities::items;
 pub use super::_entities::taken_items::{self, ActiveModel, Entity, Model};
@@ -28,16 +24,16 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-impl Into<interface::TakenItem> for Model {
-    fn into(self) -> TakenItem {
+impl From<Model> for interface::TakenItem {
+    fn from(val: Model) -> Self {
         TakenItem {
-            created_at: self.created_at,
-            updated_at: self.updated_at,
-            id: self.id,
-            item_id: self.item_id,
-            rounds_left: self.rounds_left,
-            done: self.done,
-            rounds_total: self.rounds_total,
+            created_at: val.created_at,
+            updated_at: val.updated_at,
+            id: val.id,
+            item_id: val.item_id,
+            rounds_left: val.rounds_left,
+            done: val.done,
+            rounds_total: val.rounds_total,
         }
     }
 }
@@ -75,7 +71,7 @@ impl Model {
     pub async fn mark_done(db: &DatabaseConnection) -> ModelResult<()> {
         let current_item = Model::get_current(db).await?;
         if let Some(itm) = current_item {
-            let model = ActiveModel {
+            ActiveModel {
                 id: ActiveValue::Set(itm.id),
                 done: ActiveValue::Set(true),
                 ..Default::default()
@@ -123,7 +119,7 @@ impl Model {
                 .offset(item_offset)
                 .one(&txn)
                 .await?
-                .expect(&format!("Item with offset {} returned None", item_offset));
+                .unwrap_or_else(|| panic!("Item with offset {} returned None", item_offset));
             let total_rounds = rand::random::<i16>().clamp(1, 6);
             let model = ActiveModel {
                 item_id: ActiveValue::Set(item.id),
