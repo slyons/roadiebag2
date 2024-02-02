@@ -255,5 +255,3 @@ impl super::_entities::users::ActiveModel {
         Ok(self.update(db).await?)
     }
 }
-
-

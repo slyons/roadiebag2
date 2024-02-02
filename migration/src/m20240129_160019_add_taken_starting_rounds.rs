@@ -2,7 +2,6 @@ use std::borrow::BorrowMut;
 
 use loco_rs::schema::*;
 use sea_orm_migration::prelude::*;
-use crate::m20240123_154524_taken_items::TakenItems as TakenItemsOld;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,7 +11,7 @@ enum TakenItems {
     Table,
     Rounds,
     RoundsTotal,
-    RoundsLeft
+    RoundsLeft,
 }
 
 #[async_trait::async_trait]
@@ -24,7 +23,7 @@ impl MigrationTrait for Migration {
                     .table(TakenItems::Table)
                     .rename_column(TakenItems::Rounds, TakenItems::RoundsLeft)
                     //
-                    .to_owned()
+                    .to_owned(),
             )
             .await?;
 
@@ -33,7 +32,7 @@ impl MigrationTrait for Migration {
                 Table::alter()
                     .table(TakenItems::Table)
                     .add_column_if_not_exists(tiny_integer(TakenItems::RoundsTotal).borrow_mut())
-                    .to_owned()
+                    .to_owned(),
             )
             .await
     }
@@ -44,7 +43,7 @@ impl MigrationTrait for Migration {
                 Table::alter()
                     .table(TakenItems::Table)
                     .rename_column(TakenItems::RoundsLeft, TakenItems::Rounds)
-                    .to_owned()
+                    .to_owned(),
             )
             .await?;
 
@@ -53,9 +52,8 @@ impl MigrationTrait for Migration {
                 Table::alter()
                     .table(TakenItems::Table)
                     .drop_column(TakenItems::RoundsTotal)
-                    .to_owned()
+                    .to_owned(),
             )
             .await
     }
 }
-

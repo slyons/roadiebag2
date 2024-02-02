@@ -43,9 +43,7 @@ pub enum TakenItems {
     ItemId,
     Rounds,
     Done,
-    
 }
-
 
 #[derive(DeriveIden)]
 enum Items {

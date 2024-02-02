@@ -39,7 +39,4 @@ enum Items {
     Quantity,
     Size,
     Infinite,
-    
 }
-
-

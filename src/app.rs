@@ -6,20 +6,15 @@ use loco_rs::{
     boot::{create_app, BootResult, StartMode},
     controller::AppRoutes,
     db::{self, truncate_table},
+    environment::Environment,
     task::Tasks,
     worker::{AppWorker, Processor},
     Result,
 };
-use loco_rs::environment::Environment;
 use migration::Migrator;
 use sea_orm::DatabaseConnection;
 
-use crate::{
-    controllers,
-    models::_entities::{users},
-    tasks,
-    workers::downloader::DownloadWorker,
-};
+use crate::{controllers, models::_entities::users, tasks, workers::downloader::DownloadWorker};
 
 pub struct App;
 #[async_trait]
@@ -68,7 +63,8 @@ impl Hooks for App {
 
     async fn seed(db: &DatabaseConnection, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(db, &base.join("users.yaml").display().to_string()).await?;
-        //db::seed::<notes::ActiveModel>(db, &base.join("notes.yaml").display().to_string()).await?;
+        //db::seed::<notes::ActiveModel>(db,
+        // &base.join("notes.yaml").display().to_string()).await?;
         Ok(())
     }
 }

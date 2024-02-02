@@ -1,8 +1,7 @@
 use insta::assert_debug_snapshot;
-use roadiebag2::app::App;
 use loco_rs::testing;
+use roadiebag2::{app::App, models::items};
 use serial_test::serial;
-use roadiebag2::models::items;
 
 macro_rules! configure_insta {
     ($($expr:expr),*) => {
@@ -24,7 +23,7 @@ async fn test_create() {
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
 
     let model = items::Model::create(&boot.app_context.db, create).await;
@@ -47,7 +46,7 @@ async fn test_update() {
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
 
     let model = items::Model::create(&boot.app_context.db, create.clone()).await;
@@ -76,21 +75,31 @@ async fn can_delete() {
 
     let boot = testing::boot_test::<App>().await.unwrap();
 
-    let starting_list = items::Model::list(&boot.app_context.db, None).await.unwrap();
+    let starting_list = items::Model::list(&boot.app_context.db, None)
+        .await
+        .unwrap();
 
     let create = interface::CreateUpdateItem {
         name: "Test item".to_string(),
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
 
-    let item = items::Model::create(&boot.app_context.db, create).await.unwrap();
-    let after_create_list = items::Model::list(&boot.app_context.db, None).await.unwrap();
+    let item = items::Model::create(&boot.app_context.db, create)
+        .await
+        .unwrap();
+    let after_create_list = items::Model::list(&boot.app_context.db, None)
+        .await
+        .unwrap();
 
-    items::Model::delete(&boot.app_context.db, item.id).await.unwrap();
-    let after_delete_list = items::Model::list(&boot.app_context.db, None).await.unwrap();
+    items::Model::delete(&boot.app_context.db, item.id)
+        .await
+        .unwrap();
+    let after_delete_list = items::Model::list(&boot.app_context.db, None)
+        .await
+        .unwrap();
 
     insta::with_settings!({
         filters => testing::CLEANUP_DATE.to_vec()
@@ -110,37 +119,49 @@ async fn can_filter() {
 
     let boot = testing::boot_test::<App>().await.unwrap();
 
-    let starting_list = items::Model::list(&boot.app_context.db, None).await.unwrap();
+    let starting_list = items::Model::list(&boot.app_context.db, None)
+        .await
+        .unwrap();
 
     let create = interface::CreateUpdateItem {
         name: "Test item".to_string(),
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
     let create2 = interface::CreateUpdateItem {
         name: "Test item2".to_string(),
         description: None,
         quantity: 1,
         size: interface::ItemSize::Medium,
-        infinite: true
+        infinite: true,
     };
-    let item1 = items::Model::create(&boot.app_context.db, create).await.unwrap();
-    let item2 = items::Model::create(&boot.app_context.db, create2).await.unwrap();
-    let all_items = items::Model::list(&boot.app_context.db, None).await.unwrap();
+    let item1 = items::Model::create(&boot.app_context.db, create)
+        .await
+        .unwrap();
+    let item2 = items::Model::create(&boot.app_context.db, create2)
+        .await
+        .unwrap();
+    let all_items = items::Model::list(&boot.app_context.db, None)
+        .await
+        .unwrap();
 
     let small_filter = interface::ItemFilter {
         size: Some(interface::ItemSize::Small),
         ..Default::default()
     };
-    let small_items = items::Model::list(&boot.app_context.db, Some(small_filter)).await.unwrap();
+    let small_items = items::Model::list(&boot.app_context.db, Some(small_filter))
+        .await
+        .unwrap();
 
     let inf_filter = interface::ItemFilter {
         infinite: Some(true),
         ..Default::default()
     };
-    let inf_items = items::Model::list(&boot.app_context.db, Some(inf_filter)).await.unwrap();
+    let inf_items = items::Model::list(&boot.app_context.db, Some(inf_filter))
+        .await
+        .unwrap();
 
     insta::with_settings!({
         filters => testing::CLEANUP_DATE.to_vec()

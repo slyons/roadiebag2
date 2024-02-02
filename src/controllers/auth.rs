@@ -2,7 +2,6 @@ use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    mailers::auth::AuthMailer,
     models::{
         _entities::users,
         users::{LoginParams, RegisterParams},
@@ -45,8 +44,7 @@ async fn register(
         }
     };
 
-    let user = user
-        .into_active_model()
+    user.into_active_model()
         .set_email_verification_sent(&ctx.db)
         .await?
         .into_active_model()
@@ -145,6 +143,6 @@ pub fn routes() -> Routes {
         .add("/register", post(register))
         //.add("/verify", post(verify))
         .add("/login", post(login))
-        //.add("/forgot", post(forgot))
-        //.add("/reset", post(reset))
+    //.add("/forgot", post(forgot))
+    //.add("/reset", post(reset))
 }
