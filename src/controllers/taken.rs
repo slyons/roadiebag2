@@ -2,8 +2,8 @@
 
 use axum::debug_handler;
 use loco_rs::prelude::*;
-use crate::models::taken_items;
-use crate::models::users;
+
+use crate::models::{taken_items, users};
 
 #[debug_handler]
 pub async fn get_current(
@@ -22,10 +22,7 @@ pub async fn decrement_rounds(
     format::json(taken_items::Model::decrement_rounds(&ctx.db).await?)
 }
 
-pub async fn mark_done(
-    State(ctx): State<AppContext>,
-    auth: auth::JWT,
-) -> Result<()> {
+pub async fn mark_done(State(ctx): State<AppContext>, auth: auth::JWT) -> Result<()> {
     let _user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
     taken_items::Model::mark_done(&ctx.db).await?;
@@ -38,9 +35,7 @@ pub async fn get_random(
 ) -> Result<Json<interface::TakenItem>> {
     let _user = users::Model::find_by_pid(&ctx.db, &auth.claims.pid).await?;
 
-    format::json(
-        taken_items::Model::get_random(&ctx.db).await?
-    )
+    format::json(taken_items::Model::get_random(&ctx.db).await?)
 }
 
 pub fn routes() -> Routes {

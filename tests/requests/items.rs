@@ -1,7 +1,8 @@
 use insta::{assert_debug_snapshot, with_settings};
-use roadiebag2::app::App;
 use loco_rs::testing;
+use roadiebag2::app::App;
 use serial_test::serial;
+
 use super::prepare_data;
 
 macro_rules! configure_insta {
@@ -26,7 +27,7 @@ async fn item_crud() {
             description: None,
             quantity: 2,
             size: interface::ItemSize::Small,
-            infinite: false
+            infinite: false,
         };
 
         let (auth_key, auth_value) = prepare_data::auth_header(&user.token);
@@ -36,8 +37,7 @@ async fn item_crud() {
             .add_header(auth_key.clone(), auth_value.clone())
             .await;
         create_response.assert_status_ok();
-        let model:interface::Item = create_response.clone().json();
-
+        let model: interface::Item = create_response.clone().json();
 
         let read_response = request
             .get(&format!("/api/items/{}", model.id))
@@ -78,5 +78,5 @@ async fn item_crud() {
             ))
         });
     })
-        .await;
+    .await;
 }

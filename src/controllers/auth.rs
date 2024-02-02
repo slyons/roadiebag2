@@ -145,6 +145,6 @@ pub fn routes() -> Routes {
         .add("/register", post(register))
         //.add("/verify", post(verify))
         .add("/login", post(login))
-        //.add("/forgot", post(forgot))
-        //.add("/reset", post(reset))
+    //.add("/forgot", post(forgot))
+    //.add("/reset", post(reset))
 }

@@ -1,10 +1,12 @@
 use insta::assert_debug_snapshot;
-use roadiebag2::app::App;
 use loco_rs::testing;
+use roadiebag2::{
+    app::App,
+    models::{items, taken_items},
+};
 use serial_test::serial;
 use test_log::test;
 use tracing_test::traced_test;
-use roadiebag2::models::{items, taken_items};
 
 macro_rules! configure_insta {
     ($($expr:expr),*) => {
@@ -28,19 +30,26 @@ async fn test_model() {
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
 
     let model = items::Model::create(&boot.app_context.db, create).await;
 
-    let current_taken_none = taken_items::Model::get_current(&boot.app_context.db).await.unwrap();
+    let current_taken_none = taken_items::Model::get_current(&boot.app_context.db)
+        .await
+        .unwrap();
 
-    let current_random = taken_items::Model::get_random(&boot.app_context.db).await.unwrap();
+    let current_random = taken_items::Model::get_random(&boot.app_context.db)
+        .await
+        .unwrap();
 
-    taken_items::Model::mark_done(&boot.app_context.db).await.unwrap();
+    taken_items::Model::mark_done(&boot.app_context.db)
+        .await
+        .unwrap();
 
-    let current_taken_done = taken_items::Model::get_current(&boot.app_context.db).await.unwrap();
-
+    let current_taken_done = taken_items::Model::get_current(&boot.app_context.db)
+        .await
+        .unwrap();
 
     insta::with_settings!({
         filters => {
@@ -73,14 +82,18 @@ async fn test_decrement() {
         description: None,
         quantity: 2,
         size: interface::ItemSize::Small,
-        infinite: false
+        infinite: false,
     };
 
     let _model = items::Model::create(&boot.app_context.db, create).await;
-    let current_random = taken_items::Model::get_random(&boot.app_context.db).await.unwrap();
+    let current_random = taken_items::Model::get_random(&boot.app_context.db)
+        .await
+        .unwrap();
 
-    let decr = taken_items::Model::decrement_rounds(&boot.app_context.db).await.unwrap().unwrap();
+    let decr = taken_items::Model::decrement_rounds(&boot.app_context.db)
+        .await
+        .unwrap()
+        .unwrap();
 
     assert_eq!(current_random.rounds_left - 1, decr.rounds_left)
 }
-

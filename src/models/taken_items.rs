@@ -1,18 +1,20 @@
 use chrono::Utc;
-use sea_orm::{ActiveValue, JoinType, QuerySelect, TransactionTrait};
-use sea_orm::entity::prelude::*;
-use loco_rs:: {
-    model::{ModelError, ModelResult},
-};
-use sea_orm::sea_query::{Alias, Query};
 use interface::TakenItem;
-pub use super::_entities::taken_items::{self, Entity, ActiveModel, Model};
+use loco_rs::model::{ModelError, ModelResult};
+use sea_orm::{
+    entity::prelude::*,
+    sea_query::{Alias, Query},
+    ActiveValue, JoinType, QuerySelect, TransactionTrait,
+};
+
 use super::_entities::items;
+pub use super::_entities::taken_items::{self, ActiveModel, Entity, Model};
 
 #[async_trait::async_trait]
 impl ActiveModelBehavior for ActiveModel {
     async fn before_save<C>(self, _db: &C, insert: bool) -> Result<Self, DbErr>
-        where C: ConnectionTrait
+    where
+        C: ConnectionTrait,
     {
         {
             let mut this = self;
@@ -35,7 +37,7 @@ impl Into<interface::TakenItem> for Model {
             item_id: self.item_id,
             rounds_left: self.rounds_left,
             done: self.done,
-            rounds_total: self.rounds_total
+            rounds_total: self.rounds_total,
         }
     }
 }
@@ -49,7 +51,9 @@ impl Model {
             .map(Into::into))
     }
 
-    pub async fn decrement_rounds(db: &DatabaseConnection) -> ModelResult<Option<interface::TakenItem>> {
+    pub async fn decrement_rounds(
+        db: &DatabaseConnection,
+    ) -> ModelResult<Option<interface::TakenItem>> {
         let current_item = Model::get_current(db).await?;
         if let Some(itm) = current_item {
             let new_round_count = itm.rounds_left - 1;
@@ -60,8 +64,8 @@ impl Model {
                 done: ActiveValue::Set(done),
                 ..Default::default()
             }
-                .update(db)
-                .await?;
+            .update(db)
+            .await?;
             Ok(Some(model.into()))
         } else {
             Ok(current_item)
@@ -76,8 +80,8 @@ impl Model {
                 done: ActiveValue::Set(true),
                 ..Default::default()
             }
-                .update(db)
-                .await?;
+            .update(db)
+            .await?;
             Ok(())
         } else {
             Ok(())
@@ -100,12 +104,14 @@ impl Model {
                         Expr::case(
                             items::Column::Infinite.eq(false),
                             items::Column::Quantity.into_expr().sub(
-                                Expr::expr(taken_items::Column::Id.into_expr().count()).if_null(0)
-                            )
-                        ).finally(1)
-                    ).gte(1)
+                                Expr::expr(taken_items::Column::Id.into_expr().count()).if_null(0),
+                            ),
+                        )
+                        .finally(1),
+                    )
+                    .gte(1),
                 );
-                //.column(items::Column::Id);
+            //.column(items::Column::Id);
             let item_count = item_uses.clone().count(&txn).await?;
             tracing::info!("Item count is {}", item_count);
             let item_offset = rand::random::<u64>().clamp(0, item_count - 1);
@@ -113,7 +119,9 @@ impl Model {
             //let item_id = item_uses.offset(item_offset).into_tuple().one(&txn)
             //    .await?
             //    .expect(&format!("Item with offset {} returned None", item_offset));
-            let item = item_uses.offset(item_offset).one(&txn)
+            let item = item_uses
+                .offset(item_offset)
+                .one(&txn)
                 .await?
                 .expect(&format!("Item with offset {} returned None", item_offset));
             let total_rounds = rand::random::<i16>().clamp(1, 6);
@@ -124,8 +132,8 @@ impl Model {
                 done: ActiveValue::Set(false),
                 ..Default::default()
             }
-                .insert(&txn)
-                .await?;
+            .insert(&txn)
+            .await?;
 
             txn.commit().await?;
             Ok(model.into())
